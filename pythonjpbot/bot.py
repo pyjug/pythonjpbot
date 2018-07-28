@@ -6,6 +6,7 @@ from . import botcmd, quote
 
 client = discord.Client()
 
+
 @client.event
 async def on_message(msg):
     if msg.author == client.user:
@@ -27,6 +28,7 @@ async def on_message(msg):
         s = io.StringIO()
         traceback.print_exc(file=s)
         await client.send_message(msg.channel, s.getvalue())
+
 
 def run(key):
     client.run(key)

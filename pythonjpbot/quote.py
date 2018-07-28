@@ -1,6 +1,7 @@
 import re
 import discord
 
+
 def compose_embed(channel, msg):
     embed = discord.Embed(
         description=msg.content,
@@ -27,4 +28,3 @@ async def run(client, msg):
 
             embed = compose_embed(channel, msg)
             await client.send_message(msg.channel, embed=embed)
-    

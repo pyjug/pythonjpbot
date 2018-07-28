@@ -6,16 +6,20 @@ import re
 
 from google.cloud import datastore
 
-#export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
+# export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
 datastore_client = datastore.Client()
 
 # hack argparse
 _org_sys = argparse._sys
+
+
 class _dummy:
     def write(*args, **kwargs):
-         pass
+        pass
+
 
 _dummy_file = _dummy()
+
 
 class _proxy:
     def __getattr__(self, name):
@@ -23,40 +27,41 @@ class _proxy:
             return _dummy_file
         return getattr(_org_sys, name)
 
+
 argparse._sys = _proxy()
 
 
 parser = argparse.ArgumentParser(
-            prog='/bot',
-            description='PythonJP Discord bot',
-            add_help=False)
+    prog='/bot',
+    description='PythonJP Discord bot',
+    add_help=False)
 
 parser.add_argument('-h', '--help', help='Show help', action='store_const', const=True)
 
 
-parser.exit = lambda *args:None
+parser.exit = lambda *args: None
 
 subparsers = parser.add_subparsers(help='sub-command help', dest='resp')
 
-reply = subparsers.add_parser('resp', help='Manage auto response',add_help=False)
+reply = subparsers.add_parser('resp', help='Manage auto response', add_help=False)
 
 reply.add_argument('--help', action='store_const', dest='resp_help',
-    const=True, default=False, help="Remove WORD")
+                   const=True, default=False, help="Remove WORD")
 
 reply.add_argument('--remove', dest='resp_remove', action='store_const',
-    const=True, default=False, help="Remove WORD")
+                   const=True, default=False, help="Remove WORD")
 
 reply.add_argument('--list', dest='resp_list', action='store_const',
-    const=True, default=False, help="List RESPONSES")
+                   const=True, default=False, help="List RESPONSES")
 
 reply.add_argument('resp_word', metavar='WORD', help="When someone says:", nargs='?', default='')
 reply.add_argument('resp_reply', metavar='RESPONSE', help="I response:", nargs='?', default='')
 
 
 def get_help(args):
-   s = io.StringIO()
-   args.print_help(s)
-   return s.getvalue()
+    s = io.StringIO()
+    args.print_help(s)
+    return s.getvalue()
 
 
 async def run(client, msg):

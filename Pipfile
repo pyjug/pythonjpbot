@@ -13,3 +13,4 @@ google-cloud-datastore = "*"
 
 [dev-packages]
 
+"autopep8" = "*"
