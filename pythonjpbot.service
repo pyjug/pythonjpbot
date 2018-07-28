@@ -1,0 +1,18 @@
+[Unit]
+Description=pythonjpbot
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/pythonjpbot
+
+Environment=LANG=en_US.UTF-8
+Environment=DISCORD_BOT_KEYFILE="/home/ubuntu/pythonjp-server-gce1/discordbot_pythonjpbot"
+Environment=GOOGLE_APPLICATION_CREDENTIALS="/home/ubuntu/pythonjp-server-gce1/google-datastore-key-proj-pythonjp-97126fb1bd30.json"
+
+ExecStart=/home/ubuntu/.local/bin/pipenv run python -m pythonjpbot
+
+[Install]
+WantedBy=multi-user.target
+
