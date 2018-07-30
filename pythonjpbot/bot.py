@@ -52,7 +52,23 @@ def my_parse_message_reaction_add(self, data):
         user = self._get_member(channel, data['user_id'])
         if not user:
             return
-        reaction.on_reaction(client, channel, user, data)
+
+        f = client.loop.create_task(
+            client.get_message(channel, data['message_id']))
+
+        def done(f):
+            try:
+                msg = f.result()
+                reaction.on_reaction(client, channel, user, msg, data)
+
+            except Exception as e:
+                traceback.print_exc()
+                print("Error:", e)
+
+
+        f.add_done_callback(done)
+        
+
     except Exception:
         if channel:
             send_exp(channel)

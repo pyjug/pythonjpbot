@@ -7,7 +7,7 @@ from google.cloud import datastore
 from . datastore import datastore_client
 
 
-def on_reaction(client, channel, user, data):
+def on_reaction(client, channel, user, msg, data):
     #    'emoji': {'name': 'guido', 'id': '467217552016408579', 'animated': False},
 
     name = data['emoji']['name']
@@ -18,7 +18,7 @@ def on_reaction(client, channel, user, data):
     else:
         s = [name, None]
 
-    k = datastore_client.key('USERREACTION', user.id)
+    k = datastore_client.key('USERREACTION', msg.author.id)
     ret = datastore_client.get(k)
 
     if ret:
@@ -70,8 +70,10 @@ async def show(client, msg):
                 name = f"<:{name}:{id}>"
 
             s.append(f'{name}: {v}')
-        await client.send_message(msg.channel, ','.join(s))
-    else:
-        await client.send_message(msg.channel, 'No reactions...')
+        if s:
+            await client.send_message(msg.channel, ','.join(s))
+            return True
+
+    await client.send_message(msg.channel, 'No reactions...')
 
     return True
