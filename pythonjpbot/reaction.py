@@ -46,7 +46,7 @@ def on_reaction(client, channel, user, msg, data):
 
 async def show(client, msg):
     c = msg.content.rstrip()
-    m = re.match(r'^/reaction\s*(<@(\d{18})>)?$', c)
+    m = re.match(r'^/reaction\s*(<@!?(\d{18})>)?$', c)
     if not m:
         return
 
