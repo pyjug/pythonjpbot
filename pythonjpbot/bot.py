@@ -2,9 +2,16 @@ import io
 import traceback
 import discord
 
-from . import botcmd, quote
+from . import botcmd, quote, reaction
 
 client = discord.Client()
+
+
+def send_exp(channel):
+    s = io.StringIO()
+    traceback.print_exc(file=s)
+    print(s.getvalue())
+    client.loop.create_task(client.send_message(channel, s.getvalue()))
 
 
 @client.event
@@ -16,6 +23,10 @@ async def on_message(msg):
         return
 
     try:
+        ret = await reaction.show(client, msg)
+        if ret:
+            return
+
         ret = await botcmd.run(client, msg)
         if ret:
             return
@@ -25,10 +36,36 @@ async def on_message(msg):
             return
 
     except Exception:
-        s = io.StringIO()
-        traceback.print_exc(file=s)
-        await client.send_message(msg.channel, s.getvalue())
+        send_exp(msg.channel)
+
+
+def my_parse_message_reaction_add(self, data):
+    '''{'user_id': '370411922920833024', 'message_id': '473333106758254622',
+    'emoji': {'name': 'guido', 'id': '467217552016408579', 'animated': False},
+    'channel_id': '411079445927952389', 'guild_id': '411079445927952385'}'''
+
+    channel = None
+    try:
+        channel = self.get_channel(data['channel_id'])
+        if not channel:
+            return
+        user = self._get_member(channel, data['user_id'])
+        if not user:
+            return
+        reaction.on_reaction(client, channel, user, data)
+    except Exception:
+        if channel:
+            send_exp(channel)
+        else:
+            traceback.print_exc()
+
+#    emoji = data.get('emoji', None)
+#    if not emoji:
+#        return
+#    if emoji:
 
 
 def run(key):
+    def f(data): return my_parse_message_reaction_add(client.connection, data)
+    client.connection.parse_message_reaction_add = f
     client.run(key)

@@ -5,9 +5,7 @@ import sys
 import re
 
 from google.cloud import datastore
-
-# export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
-datastore_client = datastore.Client()
+from . datastore import datastore_client
 
 # hack argparse
 _org_sys = argparse._sys
