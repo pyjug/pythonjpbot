@@ -31,10 +31,6 @@ async def on_message(msg):
         if ret:
             return
 
-        ret = await quote.run(client, msg)
-        if ret:
-            return
-
     except Exception:
         send_exp(msg.channel)
 

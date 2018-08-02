@@ -32,8 +32,7 @@
 $ pip install pipenv
 $ git clone https://github.com/pyjug/pythonjpbot.git
 $ pythonjpbot
-$ pipenv install
-$ pipenv run python -m pythonjpbot
+$ pipenv install --three
 ```
 
 6. 実行する
