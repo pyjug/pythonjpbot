@@ -21,10 +21,10 @@
 4. 作成したDiscord bot トークンファイルのファイル名を、次のように環境変数に指定する
 
 
-    export DISCORD_BOT_KEY="[KEY]"
+    export DISCORD_BOT_KEYFILE="[KEY]"
 
     ex)
-        export DISCORD_BOT_KEY="%HOME/mybottoken"
+        export DISCORD_BOT_KEYFILE="%HOME/mybottoken"
 
 5. 実行環境を作成する
 
