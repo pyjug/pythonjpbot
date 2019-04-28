@@ -7,11 +7,19 @@ from google.cloud import datastore
 from . datastore import datastore_client
 
 
-def on_reaction(client, channel, user, msg, data):
+async def on_reaction(client, payload): #client, channel, user, msg, data):
     #    'emoji': {'name': 'guido', 'id': '467217552016408579', 'animated': False},
 
-    name = data['emoji']['name']
-    id = data['emoji']['id']
+    channel = client.get_channel(payload.channel_id)
+    if not channel:
+        return
+
+    msg = await channel.fetch_message(payload.message_id)
+    if not msg:
+        return
+
+    name = payload.emoji.name
+    id = payload.emoji.id
 
     if id:
         s = [name, id]
@@ -45,6 +53,7 @@ def on_reaction(client, channel, user, msg, data):
 
 
 async def show(client, msg):
+
     c = msg.content.rstrip()
     m = re.match(r'^/reaction\s*(<@!?(\d{18})>)?$', c)
     if not m:
@@ -61,7 +70,7 @@ async def show(client, msg):
     s = []
     if ret:
         d = json.loads(zlib.decompress(ret['rc']))
-        emojis = {e.id for e in msg.server.emojis}
+        emojis = {e.id for e in msg.guild.emojis}
 
         for (name, id), v in d:
             if id:
@@ -71,9 +80,9 @@ async def show(client, msg):
 
             s.append(f'{name}: {v}')
         if s:
-            await client.send_message(msg.channel, ','.join(s))
+            await msg.channel.send( ','.join(s))
             return True
 
-    await client.send_message(msg.channel, 'No reactions...')
+    await msg.channel.send('No reactions...')
 
     return True

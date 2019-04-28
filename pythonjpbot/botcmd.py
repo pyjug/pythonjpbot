@@ -67,7 +67,7 @@ async def run(client, msg):
     k = datastore_client.key('AUTORESP', msg.content.strip())
     ret = datastore_client.get(k)
     if ret:
-        await client.send_message(msg.channel, ret['resp'])
+        await msg.channel.send(ret['resp'])
         return True
 
     if not re.match(r'^/bot\b', msg.content):
@@ -77,21 +77,21 @@ async def run(client, msg):
     try:
         args = parser.parse_args(command)
     except TypeError:
-        await client.send_message(msg.channel, get_help(parser))
+        await msg.channel.send(get_help(parser))
         return True
 
     if not command or args.help:
-        await client.send_message(msg.channel, get_help(parser))
+        await msg.channel.send(get_help(parser))
         return True
 
     if getattr(args, 'resp', False):
         if args.resp_help:
-            await client.send_message(msg.channel, get_help(reply))
+            await msg.channel.send(get_help(reply))
         elif args.resp_list:
             query = datastore_client.query(kind='AUTORESP')
             for e in query.fetch():
                 s = f'{e.key.name} →  {e["resp"]}'
-                await client.send_message(msg.channel, s)
+                await msg.channel.send(s)
 
         elif args.resp_remove:
             word = args.resp_word.strip()
@@ -102,7 +102,7 @@ async def run(client, msg):
             word = args.resp_word.strip()
             replyword = args.resp_reply.rstrip()
             if not word or not replyword:
-                await client.send_message(msg.channel, get_help(reply))
+                await msg.channel.send(get_help(reply))
                 return
 
             resp = datastore.Entity(key=datastore_client.key('AUTORESP', word))

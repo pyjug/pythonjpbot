@@ -27,4 +27,4 @@ async def run(client, msg):
             msg = await client.get_message(channel, m.group('msg'))
 
             embed = compose_embed(channel, msg)
-            await client.send_message(msg.channel, embed=embed)
+            await msg.channel(embed=embed)
