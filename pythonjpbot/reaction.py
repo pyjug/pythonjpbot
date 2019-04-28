@@ -26,7 +26,7 @@ async def on_reaction(client, payload): #client, channel, user, msg, data):
     else:
         s = [name, None]
 
-    k = datastore_client.key('USERREACTION', msg.author.id)
+    k = datastore_client.key('USERREACTION', str(msg.author.id))
     ret = datastore_client.get(k)
 
     if ret:
@@ -60,7 +60,7 @@ async def show(client, msg):
         return
 
     if not m.group(2):
-        userid = msg.author.id
+        userid = str(msg.author.id)
     else:
         userid = m[2]
 
