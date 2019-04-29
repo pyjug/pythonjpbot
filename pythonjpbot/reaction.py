@@ -73,6 +73,8 @@ async def show(client, msg):
         emojis = {e.id for e in msg.guild.emojis}
 
         for (name, id), v in d:
+            if id is not None:
+                id = int(id)
             if id:
                 if not id in emojis:  # ignore external/unknown emoji
                     continue
