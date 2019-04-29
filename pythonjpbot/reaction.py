@@ -1,7 +1,7 @@
 import re
 import json
 import zlib
-
+import collections
 import discord
 from google.cloud import datastore
 from . datastore import datastore_client
@@ -22,7 +22,7 @@ async def on_reaction(client, payload): #client, channel, user, msg, data):
     id = payload.emoji.id
 
     if id:
-        s = [name, id]
+        s = [name, str(id)]
     else:
         s = [name, None]
 
@@ -67,24 +67,32 @@ async def show(client, msg):
     k = datastore_client.key('USERREACTION', userid)
     ret = datastore_client.get(k)
 
+    if not ret:
+        await msg.channel.send('No reactions...')
+        return True
+
+    org = json.loads(zlib.decompress(ret['rc']))
+
+    emojis = {e.id for e in msg.guild.emojis}
+
+    # emoji ids are str in some old record.
+    converted = collections.defaultdict(int)
+    for (name, id), v in org:
+        if id:
+            id = int(id)
+            if not id in emojis:  # ignore external/unknown emoji
+                continue
+
+        converted[(name, id)] += v
+
+    all = sorted(converted.items(), key=(lambda v: (v[1], v[0])), reverse=True)
     s = []
-    if ret:
-        d = json.loads(zlib.decompress(ret['rc']))
-        emojis = {e.id for e in msg.guild.emojis}
+    for (name, id), v in all:
+        if id:
+            name = f"<:{name}:{id}>"
+        s.append(f'{name}: {v}')
 
-        for (name, id), v in d:
-            if id is not None:
-                id = int(id)
-            if id:
-                if not id in emojis:  # ignore external/unknown emoji
-                    continue
-                name = f"<:{name}:{id}>"
-
-            s.append(f'{name}: {v}')
-        if s:
-            await msg.channel.send( ','.join(s))
-            return True
-
-    await msg.channel.send('No reactions...')
+    if s:
+        await msg.channel.send( ','.join(s))
 
     return True
