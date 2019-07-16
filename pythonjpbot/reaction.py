@@ -73,7 +73,7 @@ async def show(client, msg):
 
     org = json.loads(zlib.decompress(ret['rc']))
 
-    emojis = {e.id for e in msg.guild.emojis}
+    emojis = {e.id:e for e in msg.guild.emojis}
 
     # emoji ids are str in some old record.
     converted = collections.defaultdict(int)
@@ -89,9 +89,8 @@ async def show(client, msg):
     s = []
     for (name, id), v in all:
         if id:
-            name = f"<:{name}:{id}>"
+            name = f"<{'a' if emojis[id].animated else ''}:{name}:{id}>"
         s.append(f'{name}: {v}')
-
     if s:
         await msg.channel.send( ','.join(s))
 
